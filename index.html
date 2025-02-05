@@ -27,6 +27,12 @@
             font-size: 3rem;
             font-weight: bold;
         }
+        .log-list {
+            margin-top: 20px;
+            text-align: left;
+            max-height: 200px;
+            overflow-y: auto;
+        }
     </style>
 </head>
 <body>
@@ -35,22 +41,45 @@
         <p class="counter" id="count">0</p>
         <button class="btn btn-success w-100 mb-2" onclick="increaseCount()">+ Add</button>
         <button class="btn btn-danger w-100" onclick="resetCount()">Reset</button>
+        <div class="log-list">
+            <ul id="log" class="list-group"></ul>
+        </div>
     </div>
 
     <script>
         let count = localStorage.getItem('smokeCount') ? parseInt(localStorage.getItem('smokeCount')) : 0;
+        let log = JSON.parse(localStorage.getItem('smokeLog')) || [];
         document.getElementById("count").innerText = count;
+        updateLog();
 
         function increaseCount() {
             count++;
             document.getElementById("count").innerText = count;
             localStorage.setItem('smokeCount', count);
+            let time = new Date().toLocaleTimeString();
+            log.push(`Quantity: ${count} at ${time}`);
+            localStorage.setItem('smokeLog', JSON.stringify(log));
+            updateLog();
         }
 
         function resetCount() {
             count = 0;
             document.getElementById("count").innerText = count;
             localStorage.setItem('smokeCount', count);
+            log = [];
+            localStorage.setItem('smokeLog', JSON.stringify(log));
+            updateLog();
+        }
+
+        function updateLog() {
+            let logElement = document.getElementById("log");
+            logElement.innerHTML = "";
+            log.forEach(entry => {
+                let li = document.createElement("li");
+                li.classList.add("list-group-item");
+                li.innerText = entry;
+                logElement.appendChild(li);
+            });
         }
     </script>
 </body>
